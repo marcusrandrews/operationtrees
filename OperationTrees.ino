@@ -19,6 +19,7 @@ const int QuantumBoardRelay=  7;
 const int AirFilter =  8;
 
 
+
 void setup() {
   // Booting
   RTC.begin();
@@ -44,6 +45,7 @@ void setup() {
 void loop() {
   
    Temperature();
+   SoilMoisture();
    LightSchedule();
    TimeStamp(); 
    Serial.println(" ");
@@ -118,6 +120,17 @@ void Temperature() {
     Serial.println("Intake Fan code confused");
   }
 }
+
+// Soil Moisture 685 - dry, 477 - moist soil, 327 - water
+void SoilMoisture() {
+  
+  int val;
+  val = analogRead(0); //connect sensor to Analog 0
+  Serial.println(val); //print the value to serial port
+  
+}
+
+
 
 // Air Filter Control
 void AirFilterControl() {
