@@ -1,4 +1,3 @@
-
 // Tiny RTC Module http://henrysbench.capnfatz.com/henrys-bench/arduino-sensors-and-input/arduino-tiny-rtc-d1307-tutorial/ 
 #include <Wire.h>
 #include "RTClib.h"
@@ -15,9 +14,9 @@ DallasTemperature sensors(&oneWire);
 
 // VARIABLES
 // Relays 
-const int IntakeFan = 6;
-const int QuantumBoardRelay =  7;
-const int Pump =  8;
+
+const int QuantumBoardRelay=  7;
+const int AirFilter =  8;
 
 
 void setup() {
@@ -37,8 +36,8 @@ void setup() {
   
   // Outputs
   pinMode(QuantumBoardRelay, OUTPUT);  
-  pinMode(Pump, OUTPUT); 
-  pinMode(IntakeFan, OUTPUT);  
+  pinMode(AirFilter, OUTPUT); 
+  
 }
 
 
@@ -47,6 +46,7 @@ void loop() {
    Temperature();
    LightSchedule();
    TimeStamp(); 
+   Serial.println(" ");
    delay(60000); 
    
 }
@@ -57,6 +57,7 @@ void loop() {
 //    Light Control
 //    Time Control
 //    Temperature Control
+//    AirFilter
 
 
 
@@ -91,7 +92,6 @@ void TimeStamp() {
    Serial.print(now.minute(), DEC);
    Serial.print(":");
    Serial.println(now.second(), DEC);
-   Serial.println(" ");
 }
 
 // Temperature Control
@@ -101,14 +101,14 @@ void Temperature() {
   int FanOff = 16; // Set Lower Limit ˚C, turns fan off to help maintain heat
 
   if (sensors.getTempCByIndex(0) < FanOff) {
-     digitalWrite(IntakeFan, 1); // Intake fan wired to relay 'Normally Open', 1 turns it OFF.
+     
      sensors.requestTemperatures(); 
      Serial.print("Temperature: ");
      Serial.print(sensors.getTempCByIndex(0));
      Serial.println("˚C");
   }
   else if (sensors.getTempCByIndex(0) >= FanOff) {
-     digitalWrite(IntakeFan, 0); // Intake fan wired to relay 'Normally Open', 0 turns it ON.
+     
      sensors.requestTemperatures(); 
      Serial.print("Temperature: ");
      Serial.print(sensors.getTempCByIndex(0));
@@ -119,6 +119,21 @@ void Temperature() {
   }
 }
 
+// Air Filter Control
+void AirFilterControl() {
 
-
+  DateTime now = RTC.now(); 
   
+
+  if (now.hour() < 6) {
+     digitalWrite(AirFilter, 1);
+     Serial.println("Air Filter ON");
+  } 
+  else if (now.hour() >= 6) {
+     digitalWrite(AirFilter, 0);
+     Serial.println("Air Filter OFF"); 
+  } 
+  else {
+     Serial.println("Quantum Board code confused");
+  }
+}
